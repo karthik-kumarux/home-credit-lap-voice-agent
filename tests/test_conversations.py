@@ -1,22 +1,26 @@
 import os
 import sys
 import unittest
+import pytest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.simulator import ConversationSimulator
-from tests.test_scenarios import SCENARIOS
+from test_scenarios import SCENARIOS
+
+# Filter scenarios if needed, or run all
+ALL_SCENARIOS = list(SCENARIOS.keys())
 
 class TestConversations(unittest.TestCase):
     """
     Integration tests running actual LLM calls through the simulator.
-    Requires ANTHROPIC_API_KEY to be set.
+    Requires GROQ_API_KEY to be set.
     """
 
     @classmethod
     def setUpClass(cls):
-        api_key = os.getenv("ANTHROPIC_API_KEY")
+        api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
-            raise unittest.SkipTest("ANTHROPIC_API_KEY not found. Skipping live LLM tests.")
+            raise unittest.SkipTest("GROQ_API_KEY not found. Skipping live LLM tests.")
 
     def run_scenario(self, scenario_name: str):
         data = SCENARIOS[scenario_name]
@@ -49,22 +53,14 @@ class TestConversations(unittest.TestCase):
 
         print(f"  ✓ {scenario_name} Passed.")
 
-    # We can explicitly define test methods for the critical paths
-    # to run them selectively or in parallel.
-    def test_happy_path(self):
-        self.run_scenario("T01_Happy_Path")
+def generate_test(scenario_name):
+    def test(self):
+        self.run_scenario(scenario_name)
+    return test
 
-    def test_immediate_disqualify(self):
-        self.run_scenario("T02_Agricultural")
-
-    def test_correction(self):
-        self.run_scenario("T16_Correction")
-
-    def test_multi_fact(self):
-        self.run_scenario("T22_Multi_Fact_Response")
-
-    def test_existing_loan_transfer(self):
-        self.run_scenario("T12_Existing_Loan")
+for scenario in ALL_SCENARIOS:
+    test_method_name = f"test_{scenario.lower()}"
+    setattr(TestConversations, test_method_name, generate_test(scenario))
 
 if __name__ == "__main__":
     unittest.main()

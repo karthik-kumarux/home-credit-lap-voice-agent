@@ -3,9 +3,9 @@ import json
 import re
 from typing import List, Dict, Any
 from dotenv import load_dotenv
-import anthropic
+import groq
 
-from state import EligibilityEngine
+from src.state import EligibilityEngine
 
 # Load environment variables
 load_dotenv()
@@ -22,12 +22,12 @@ class ConversationSimulator:
         with open(self.prompt_path, 'r', encoding='utf-8') as f:
             self.base_prompt_template = f.read()
 
-        # Initialize Anthropic client
-        api_key = os.getenv("ANTHROPIC_API_KEY")
+        # Initialize Groq client
+        api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
-            print("WARNING: ANTHROPIC_API_KEY not found in environment.")
+            print("WARNING: GROQ_API_KEY not found in environment.")
 
-        self.client = anthropic.Anthropic(api_key=api_key) if api_key else None
+        self.client = groq.Groq(api_key=api_key) if api_key else None
 
     def render_prompt(self, customer_utterance: str) -> str:
         """Hydrates the Jinja-like variables in the prompt."""
@@ -74,6 +74,16 @@ class ConversationSimulator:
                 return json.loads(match.group(1))
             except Exception as e:
                 print(f"Error parsing regex extracted JSON: {e}")
+        else:
+            # Attempt to find any JSON-like structure
+            try:
+                start = text.find('{')
+                end = text.rfind('}') + 1
+                if start != -1 and end != 0:
+                    return json.loads(text[start:end])
+            except Exception:
+                pass
+
 
         # Fallback to empty if parse fails
         print("Failed to parse LLM JSON output. Raw output was:")
@@ -83,23 +93,41 @@ class ConversationSimulator:
     def process_turn(self, customer_input: str) -> Dict[str, Any]:
         """Runs a single interaction turn."""
         if not self.client:
-             raise ValueError("Anthropic client not initialized (missing API key).")
+             raise ValueError("Groq client not initialized (missing GROQ API key).")
 
         # Add to local history
         self.history.append({"role": "customer", "content": customer_input})
 
         prompt = self.render_prompt(customer_input)
 
+        model_id = os.getenv("LLM_MODEL_ID", "llama-3.3-70b-versatile")
+
         # Call LLM
-        response = self.client.messages.create(
-            model="claude-3-5-sonnet-latest",
-            max_tokens=1000,
-            temperature=0,
-            messages=[{"role": "user", "content": prompt}]
-        )
+        max_retries = 6
+        for attempt in range(max_retries):
+            try:
+                import time
+                response = self.client.chat.completions.create(
+                    model=model_id,
+                    max_tokens=1000,
+                    temperature=0,
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                break
+            except Exception as e:
+                err_msg = str(e)
+                if "429" in err_msg and attempt < max_retries - 1:
+                    # extract wait time if possible, else 10 seconds
+                    import re
+                    match = re.search(r'Please try again in (\d+\.?\d*)s', err_msg)
+                    wait_time = float(match.group(1)) + 1.0 if match else 10.0
+                    print(f"Rate limited. Sleeping for {wait_time:.2f} seconds (Attempt {attempt+1}/{max_retries})...")
+                    time.sleep(wait_time)
+                else:
+                    raise e
 
-        llm_text = response.content[0].text
-
+        llm_text = response.choices[0].message.content or ""
+        # print("Raw LLM text:", llm_text) # debugging
         # Parse JSON and Extract Facts
         parsed_output = self.parse_llm_json(llm_text)
 

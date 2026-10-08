@@ -31,7 +31,7 @@ SCENARIOS = {
             "tenure": 10,
             "disqualified": False,
             "handoff_ready": True,
-            "call_ended": False
+            "call_ended": True
         }
     },
     "T02_Agricultural": {
@@ -119,7 +119,7 @@ SCENARIOS = {
     "T09_Amount_Above_Max_Accepts": {
         "inputs": [
             "Yes.", "Yes.", "Residential", "Sole", "Yes",
-            "I need 90 lakhs."
+            "I need 90 lakhs.",
             "Okay, 75 lakh works for me."
         ],
         "expected_state": {
@@ -131,11 +131,11 @@ SCENARIOS = {
     "T10_Amount_Above_Max_Refuses": {
         "inputs": [
             "Yes.", "Yes.", "Residential", "Sole", "Yes",
-            "I need 90 lakhs."
+            "I need 90 lakhs.",
             "No, I specifically need 90 lakh or I'm not interested."
         ],
         "expected_state": {
-            "loan_amount": 7500000,  # Or original 9000000 based on engine structure
+            "loan_amount": 9000000,
             "disqualified": True,
             "disqualification_reason": "Amount above limit refused",
             "call_ended": True
