@@ -1,0 +1,14 @@
+======================================================
+     HOME CREDIT LAP VOICE AGENT - TEST TRANSCRIPT
+======================================================
+Scenario: T02 Agricultural
+Goal: Immediate disqualification on property type.
+
+[Call initiated - System connects]
+Agent: Hello, am I speaking with Rahul?
+Cust: Yes, speaking.
+Agent: Great. To begin, could you please tell me the type of property you wish to use for this loan? Is it residential, commercial, or industrial?
+Cust: It's agricultural land.
+Agent: I apologize, but agricultural land is not eligible for this specific Loan Against Property offer. We only accept residential, commercial, or industrial properties. Therefore, I cannot proceed with the qualification process for you. Thank you for your time, and have a good day.
+
+[Call Ended - Engine Disqualified]

@@ -1,0 +1,28 @@
+======================================================
+     HOME CREDIT LAP VOICE AGENT - TEST TRANSCRIPT
+======================================================
+Scenario: T01 Happy Path
+Goal: Successfully navigate all 7 eligibility checkpoints.
+
+[Call initiated - System connects]
+Agent: Hello, am I speaking with Rahul?
+Cust: Yes, this is Rahul.
+Agent: Great, Rahul. To get started, could you tell me what type of property you own? Is it Residential, Commercial, or Industrial?
+Cust: I'm free to talk.
+Agent: Great, thank you. Could you let me know what type of property you own—Residential, Commercial, or Industrial?
+Cust: It's a residential property.
+Agent: Thanks, Rahul. Could you tell me whether you own the property solely or jointly?
+Cust: I am the sole owner.
+Agent: Thank you, Rahul. Do you have the original property documents available with you?
+Cust: Yes, I have the original documents.
+Agent: Thank you, Rahul. Could you let me know the exact loan amount you are interested in (up to ₹75,00,000)?
+Cust: I need a loan of 50 lakh.
+Agent: Thank you, Rahul. Could you please let me know your occupation and whether your income is received through a bank account or in cash?
+Cust: I'm salaried, get paid in my bank account.
+Agent: Thank you, Rahul. Could you please tell me the estimated market value of your property?
+Cust: It's worth 1 crore.
+Agent: Thank you, Rahul. Could you please let me know the loan tenure you are looking for, in years? It should be between 3 and 15 years.
+Cust: I want it for 10 years.
+Agent: Great, Rahul. A 10-year tenure is noted. I've captured all the details you provided. Our loan specialist will review your application and get back to you shortly. Thank you for your time.
+
+[Call Ended - Engine Handoff Ready]
