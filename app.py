@@ -121,8 +121,15 @@ st.markdown("""
 # Helper: API Key
 # ============================================================
 def get_api_key():
-    if hasattr(st, "secrets") and "GROQ_API_KEY" in st.secrets:
-        return st.secrets["GROQ_API_KEY"]
+    # Safely inspect st.secrets - catches TomlDecodeError if user entered unquoted secrets
+    try:
+        if hasattr(st, "secrets"):
+            for k in ["GROQ_API_KEY", "groq_api_key"]:
+                if k in st.secrets:
+                    val = str(st.secrets[k]).strip()
+                    return val.strip('"').strip("'")
+    except Exception:
+        pass
     return os.getenv("GROQ_API_KEY", "")
 
 # ============================================================

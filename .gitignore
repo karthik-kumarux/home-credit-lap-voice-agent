@@ -16,3 +16,7 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# Video recordings (uploaded to Drive, not committed to git)
+*.mp4
+output/recordings/
