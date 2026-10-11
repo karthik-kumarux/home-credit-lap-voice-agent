@@ -278,7 +278,7 @@ SCENARIOS = {
     "ADV02_Occupation_Gap": {
         "inputs": [
             "Yes.", "Yes.", "Residential", "Sole", "Yes", "50 lakh",
-            "I am retired."
+            "I am retired.",
             "Yes I get pension in my bank."
         ],
         "expected_state": {
